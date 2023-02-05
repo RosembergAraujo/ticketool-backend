@@ -1,9 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateGeneralUserDto } from './dto/create-general_user.dto';
 import { UpdateGeneralUserDto } from './dto/update-general_user.dto';
 
 @Injectable()
 export class GeneralUserService {
+<<<<<<< HEAD
+  constructor(private readonly prisma: PrismaService) {}
+=======
+>>>>>>> main
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   create(createGeneralUserDto: CreateGeneralUserDto) {
     return 'This action adds a new generalUser';
