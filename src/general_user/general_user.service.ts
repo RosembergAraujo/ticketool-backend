@@ -2,13 +2,21 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateGeneralUserDto } from './dto/create-general_user.dto';
 import { UpdateGeneralUserDto } from './dto/update-general_user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class GeneralUserService {
-  constructor(private readonly prisma: PrismaService) {}
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  create(createGeneralUserDto: CreateGeneralUserDto) {
-    return 'This action adds a new generalUser';
+  constructor(private readonly prismaService: PrismaService) {}
+  async create(createGeneralUserDto: CreateGeneralUserDto) {
+    const data = {
+      ...createGeneralUserDto,
+      password: bcrypt.hashSync(createGeneralUserDto.password, 10),
+    };
+    const createdUser = await this.prismaService.generalUser.create({ data });
+    return {
+      ...createdUser,
+      password: undefined,
+    };
   }
 
   findAll() {

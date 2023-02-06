@@ -1,3 +1,5 @@
+.idea
+sqlite.db
 # Logs
 logs
 *.log
