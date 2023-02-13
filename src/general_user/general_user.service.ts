@@ -19,6 +19,10 @@ export class GeneralUserService {
     };
   }
 
+  findByEmail(email: string) {
+    return this.prismaService.generalUser.findUnique({ where: { email } });
+  }
+
   findAll() {
     return `This action returns all generalUser`;
   }
