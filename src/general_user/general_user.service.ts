@@ -10,13 +10,17 @@ export class GeneralUserService {
   async create(createGeneralUserDto: CreateGeneralUserDto) {
     const data = {
       ...createGeneralUserDto,
-      password: bcrypt.hashSync(createGeneralUserDto.password, 10),
+      password: await bcrypt.hash(createGeneralUserDto.password, 10),
     };
     const createdUser = await this.prismaService.generalUser.create({ data });
     return {
       ...createdUser,
       password: undefined,
     };
+  }
+
+  findByEmail(email: string) {
+    return this.prismaService.generalUser.findUnique({ where: { email } });
   }
 
   findAll() {

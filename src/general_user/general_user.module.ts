@@ -7,5 +7,6 @@ import { GeneralUserService } from './general_user.service';
   imports: [PrismaModule],
   controllers: [GeneralUserController],
   providers: [GeneralUserService],
+  exports: [GeneralUserService],
 })
 export class GeneralUserModule {}
