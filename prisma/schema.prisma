@@ -11,8 +11,20 @@ generator client {
 }
 
 model GeneralUser {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  password String
-  name     String
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  role      Roles?   @relation(fields: [roleId], references: [id])
+  roleId    Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+}
+
+model Roles {
+  id          Int           @id @default(autoincrement())
+  role        String        @unique
+  generalUser GeneralUser[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt @default(now())
 }

@@ -3,4 +3,5 @@ export class GeneralUser {
   email: string;
   password: string;
   name: string;
+  roleId?: number;
 }

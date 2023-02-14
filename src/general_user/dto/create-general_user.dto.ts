@@ -1,5 +1,6 @@
 import {
   IsEmail,
+  IsNumber,
   IsString,
   Matches,
   MaxLength,
@@ -11,10 +12,10 @@ export class CreateGeneralUserDto extends GeneralUser {
   @IsEmail()
   email: string;
 
+  //Has min 1 upper, 1 lower, 1 number or special char
   @IsString()
   @MinLength(4)
   @MaxLength(20)
-  //Has min 1 upper, 1 lower, 1 number or special char
   @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
     message: 'password too weak',
   })
@@ -22,4 +23,7 @@ export class CreateGeneralUserDto extends GeneralUser {
 
   @IsString()
   name: string;
+
+  @IsNumber()
+  roleId?: number;
 }

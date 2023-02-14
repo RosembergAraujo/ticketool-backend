@@ -2,12 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateGeneralUserDto } from './dto/create-general_user.dto';
 import { UpdateGeneralUserDto } from './dto/update-general_user.dto';
+import { GeneralUser } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class GeneralUserService {
   constructor(private readonly prismaService: PrismaService) {}
-  async create(createGeneralUserDto: CreateGeneralUserDto) {
+  async create(
+    createGeneralUserDto: CreateGeneralUserDto,
+  ): Promise<GeneralUser> {
     const data = {
       ...createGeneralUserDto,
       password: await bcrypt.hash(createGeneralUserDto.password, 10),
@@ -16,6 +19,9 @@ export class GeneralUserService {
     return {
       ...createdUser,
       password: undefined,
+      createdAt: undefined,
+      updatedAt: undefined,
+      roleId: undefined,
     };
   }
 

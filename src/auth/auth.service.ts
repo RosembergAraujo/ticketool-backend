@@ -6,6 +6,7 @@ import { GeneralUser } from '../general_user/entities/general_user.entity';
 import { UserPayload } from './models/UserPayload';
 import { JwtService } from '@nestjs/jwt';
 import { UserToken } from './models/UserToken';
+import { AppRoles } from '../Constraints/AppRoles';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +21,6 @@ export class AuthService {
       return {
         ...user,
         password: undefined,
-        // foo: 'bar', // I can modify the return of "user" after Guards validates here
       };
     }
     throw new UnauthorizedError('Email address or password is incorrect');
@@ -31,6 +31,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       name: user.name,
+      role: AppRoles[user.roleId] || 'USER',
     };
     const jwtToken = this.jwtService.sign(payload);
     return {
