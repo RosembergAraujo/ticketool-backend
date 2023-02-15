@@ -1,12 +1,12 @@
 import { Controller, Get } from '@nestjs/common';
-import { CurrentUser } from './auth/decorators/current-user.decorator';
-import { GeneralUser } from './general_user/entities/general_user.entity';
-import { IsPublic } from './auth/decorators/is-public.decorator';
 import {
   HIGH_PRIVILEGES_APP_ROLES,
   LOW_PRIVILEGES_APP_ROLES,
 } from './Constraints/AppRoles';
+import { CurrentUser } from './auth/decorators/current-user.decorator';
+import { IsPublic } from './auth/decorators/is-public.decorator';
 import { RequiredRoles } from './auth/decorators/required-roles.decorator';
+import { GeneralUser } from './general_user/entities/general_user.entity';
 
 @Controller()
 export class AppController {
@@ -17,7 +17,7 @@ export class AppController {
   }
 
   @Get('me')
-  @RequiredRoles(...HIGH_PRIVILEGES_APP_ROLES, ...LOW_PRIVILEGES_APP_ROLES)
+  @RequiredRoles(...LOW_PRIVILEGES_APP_ROLES, ...HIGH_PRIVILEGES_APP_ROLES)
   getMe(@CurrentUser() user: GeneralUser): GeneralUser {
     return user;
   }

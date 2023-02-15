@@ -3,5 +3,7 @@ export class GeneralUser {
   email: string;
   password: string;
   name: string;
-  roleId?: number;
+  roleId: number;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

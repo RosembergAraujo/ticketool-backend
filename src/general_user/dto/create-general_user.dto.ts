@@ -25,5 +25,5 @@ export class CreateGeneralUserDto extends GeneralUser {
   name: string;
 
   @IsNumber()
-  roleId?: number;
+  roleId: number;
 }
