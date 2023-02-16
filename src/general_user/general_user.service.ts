@@ -44,17 +44,10 @@ export class GeneralUserService {
         roleId: undefined,
       };
     } catch (err) {
-      if (err instanceof PrismaClientKnownRequestError && err.code === 'P2002')
-        throw new HttpException(
-          'This email already used',
-          HttpStatus.CONFLICT,
-          {
-            cause: new Error(err.message),
-          },
-        );
-
+      if (err instanceof PrismaClientKnownRequestError)
+        this.handlePrismaExeption(err);
       throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR, {
-        cause: new Error('ERRO MALUCO'),
+        cause: new Error(err.message),
       });
     }
   }
@@ -87,5 +80,12 @@ export class GeneralUserService {
     const roleByNumber = AppRoles[userFromJwt.role];
     if (userToBeChecked.roleId >= roleByNumber) return;
     throw new ForbiddenException('You do not have permission to do this');
+  }
+
+  private handlePrismaExeption(err: PrismaClientKnownRequestError) {
+    if (err.code === 'P2002')
+      throw new HttpException('This email already used', HttpStatus.CONFLICT, {
+        cause: new Error(err.message),
+      });
   }
 }
