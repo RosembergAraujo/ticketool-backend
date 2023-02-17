@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgres"
   url      = env("DATABASE_URL")
 }
 
@@ -10,21 +10,19 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model GeneralUser {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  name      String
-  role      Roles?   @relation(fields: [roleId], references: [id])
-  roleId    Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+model User {
+  id         String   @id @unique @default(uuid())
+  email      String   @unique
+  password   String
+  name       String
+  cpf_cnpj   String
+  role       Role     @default(USER)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
 }
 
-model Roles {
-  id          Int           @id @default(autoincrement())
-  role        String        @unique
-  generalUser GeneralUser[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @default(now()) @updatedAt
+enum Role {
+  ADMIN
+  MANAGER
+  USER
 }

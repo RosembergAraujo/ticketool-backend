@@ -15,8 +15,6 @@ export class GeneralUserController {
     @CurrentUser() userFromJwt: UserPayload,
     @Body() createGeneralUserDto: CreateGeneralUserDto,
   ) {
-    // @CurrentUser() user: GeneralUser, // @Body() createGeneralUserDto: CreateGeneralUserDto,
-    // console.log('user:', user);
     return this.generalUserService.create(createGeneralUserDto, userFromJwt);
   }
 }
