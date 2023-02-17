@@ -18,7 +18,7 @@ model GeneralUser {
   role      Roles?   @relation(fields: [roleId], references: [id])
   roleId    Int?
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model Roles {
@@ -26,5 +26,5 @@ model Roles {
   role        String        @unique
   generalUser GeneralUser[]
   createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
 }
