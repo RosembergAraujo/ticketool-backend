@@ -1,6 +1,6 @@
-import { GeneralUser } from '../../general_user/entities/general_user.entity';
 import { Request } from 'express';
+import { User } from '../../user/entities/user.entity';
 
 export interface AuthRequest extends Request {
-  user: GeneralUser;
+  user: User;
 }
