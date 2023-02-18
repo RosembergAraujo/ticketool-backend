@@ -1,8 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 datasource db {
-  provider = "sqlite"
+  provider = "postgres"
   url      = env("DATABASE_URL")
 }
 
@@ -10,21 +7,52 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model GeneralUser {
-  id        Int      @id @default(autoincrement())
+model User {
+  id        String   @id @unique @default(uuid())
   email     String   @unique
   password  String
   name      String
-  role      Roles?   @relation(fields: [roleId], references: [id])
-  roleId    Int?
+  cpfCnpj   String
+  role      Role     @default(USER)
+  events    Event[]
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }
 
-model Roles {
-  id          Int           @id @default(autoincrement())
-  role        String        @unique
-  generalUser GeneralUser[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @default(now()) @updatedAt
+model Event {
+  id            String        @id @unique @default(uuid())
+  tittle        String
+  description   String
+  user          User          @relation(fields: [userId], references: [id])
+  userId        String
+  eventCategory EventCategory
+  startsAt      DateTime
+  expiresAt     DateTime
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now()) @updatedAt
+}
+
+enum EventCategory {
+  OUTRO
+  SHOW
+  CASAMENTO
+  ANIVERSARIO
+  FESTA
+  CONGRESSO
+  CONFERENCIA
+  CONVENCAO
+  ENCONTRO
+  FEIRA
+  FESTIVAL
+  LANCAMENTO
+  REUNIAO
+  SEMINARIO
+  WORKSHOP
+  CONCURSO
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  USER
 }

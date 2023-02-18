@@ -1,0 +1,1 @@
+export const GENERAL_USER_TOKEN_TIME_TO_EXPIRE = '1d';

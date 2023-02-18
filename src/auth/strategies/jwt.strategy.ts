@@ -18,6 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     return {
       id: payload.sub,
       email: payload.email,
+      cpfCnpj: payload.cpfCnpj,
       name: payload.name,
       role: payload.role,
     };

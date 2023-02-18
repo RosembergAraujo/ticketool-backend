@@ -1,7 +1,8 @@
 export interface UserPayload {
-  sub: number;
+  sub: string;
   email: string;
   name: string;
+  cpfCnpj: string;
   role: string;
   iat?: number;
   exp?: number;
