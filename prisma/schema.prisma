@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 datasource db {
   provider = "postgres"
   url      = env("DATABASE_URL")
@@ -17,8 +14,41 @@ model User {
   name       String
   cpf_cnpj   String
   role       Role     @default(USER)
+  events     Event[]
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
+}
+
+model Event {
+  id             String        @id @unique @default(uuid())
+  tittle         String
+  description    String
+  user           User          @relation(fields: [userId], references: [id])
+  userId         String
+  event_category EventCategory
+  starts_at      DateTime
+  expires_at     DateTime
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @default(now()) @updatedAt
+}
+
+enum EventCategory {
+  OUTRO
+  SHOW
+  CASAMENTO
+  ANIVERSARIO
+  FESTA
+  CONGRESSO
+  CONFERENCIA
+  CONVENCAO
+  ENCONTRO
+  FEIRA
+  FESTIVAL
+  LANCAMENTO
+  REUNIAO
+  SEMINARIO
+  WORKSHOP
+  CONCURSO
 }
 
 enum Role {
