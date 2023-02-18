@@ -8,28 +8,28 @@ generator client {
 }
 
 model User {
-  id         String   @id @unique @default(uuid())
-  email      String   @unique
-  password   String
-  name       String
-  cpf_cnpj   String
-  role       Role     @default(USER)
-  events     Event[]
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now()) @updatedAt
+  id        String   @id @unique @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  cpfCnpj   String
+  role      Role     @default(USER)
+  events    Event[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model Event {
-  id             String        @id @unique @default(uuid())
-  tittle         String
-  description    String
-  user           User          @relation(fields: [userId], references: [id])
-  userId         String
-  event_category EventCategory
-  starts_at      DateTime
-  expires_at     DateTime
-  created_at     DateTime      @default(now())
-  updated_at     DateTime      @default(now()) @updatedAt
+  id            String        @id @unique @default(uuid())
+  tittle        String
+  description   String
+  user          User          @relation(fields: [userId], references: [id])
+  userId        String
+  eventCategory EventCategory
+  startsAt      DateTime
+  expiresAt     DateTime
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now()) @updatedAt
 }
 
 enum EventCategory {
