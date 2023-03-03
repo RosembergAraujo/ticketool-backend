@@ -1,15 +1,16 @@
 import {
   IsEmail,
   IsEnum,
+  IsOptional,
   IsString,
   Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { Role } from '../entities/role.entity';
-import { User } from '../entities/user.entity';
+// import { Role } from '../entities/role.entity';
+import { Role } from '@prisma/client';
 
-export class CreateUserDto extends User {
+export class CreateUserDto {
   @MinLength(4)
   @MaxLength(320)
   @IsEmail()
@@ -35,5 +36,6 @@ export class CreateUserDto extends User {
 
   @IsString()
   @IsEnum(Role)
-  role: Role;
+  @IsOptional()
+  role?: Role;
 }

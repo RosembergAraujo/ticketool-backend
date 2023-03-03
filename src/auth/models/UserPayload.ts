@@ -1,5 +1,5 @@
 export interface UserPayload {
-  sub: string;
+  id: string;
   email: string;
   name: string;
   cpfCnpj: string;

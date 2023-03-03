@@ -30,7 +30,7 @@ export class AuthService {
 
   login(user: User): UserToken {
     const payload: UserPayload = {
-      sub: user.id,
+      id: user.id,
       email: user.email,
       cpfCnpj: user.cpfCnpj,
       name: user.name,

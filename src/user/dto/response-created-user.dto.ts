@@ -1,5 +1,5 @@
 export class responseCreatedUserDto {
-  id: string;
+  id?: string;
   email: string;
   password: string;
   name: string;
