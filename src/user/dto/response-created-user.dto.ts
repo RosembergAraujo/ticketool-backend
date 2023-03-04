@@ -1,4 +1,4 @@
-export class responseCreatedUserDto {
+export interface responseCreatedUserDto {
   id?: string;
   email: string;
   password: string;

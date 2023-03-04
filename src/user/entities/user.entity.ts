@@ -1,7 +1,7 @@
-// import { Role } from '@prisma/client';
-import { Role } from './role.entity';
+import { Role } from '@prisma/client';
+// import { Role } from './role.entity';
 
-export class User {
+export interface User {
   id: string;
   email: string;
   password: string;
