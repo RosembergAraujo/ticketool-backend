@@ -1,6 +1,6 @@
-import { User } from '@prisma/client';
+// import { User } from '@prisma/client';
 
-export class AuthRequest extends Request {
-  //Render burro pqp
-  user: User;
-}
+// export class AuthRequest extends Request {
+//   //Render burro pqp
+//   user: User;
+// }
