@@ -1,21 +1,21 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { LocalStrategy } from './strategies/local.strategy';
-import { GeneralUserModule } from '../general_user/general_user.module';
 import { JwtModule } from '@nestjs/jwt';
 import * as process from 'process';
-import { AppConstraints } from '../Constraints/AppConstraints';
-import { JwtStrategy } from './strategies/jwt.strategy';
+import { GENERAL_USER_TOKEN_TIME_TO_EXPIRE } from 'src/constants/app.constants';
+import { UserModule } from '../user/user.module';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
 import { LoginValidationMiddleware } from './middlewares/login-validation.middleware';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { LocalStrategy } from './strategies/local.strategy';
 
 @Module({
   imports: [
-    GeneralUserModule,
+    UserModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: {
-        expiresIn: AppConstraints.GENERAL_USER_TOKEN_TIME_TO_EXPIRE,
+        expiresIn: GENERAL_USER_TOKEN_TIME_TO_EXPIRE,
       },
     }),
   ],

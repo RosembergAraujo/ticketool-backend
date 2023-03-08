@@ -1,6 +1,5 @@
 import { CanActivate, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { AppRoles } from '../../Constraints/AppRoles';
 import { REQUIRED_ROLES_METADATA_KEY } from '../decorators/required-roles.decorator';
 
 @Injectable()
@@ -13,9 +12,7 @@ export class RequireRolesGuard implements CanActivate {
       REQUIRED_ROLES_METADATA_KEY,
       [context.getHandler(), context.getClass()],
     );
-    const thisRoleHasPermission = requiredRoles?.includes(
-      Number(AppRoles[user.role]),
-    );
+    const thisRoleHasPermission = requiredRoles?.includes(user.role);
     return !!(!requiredRoles || thisRoleHasPermission);
   }
 }

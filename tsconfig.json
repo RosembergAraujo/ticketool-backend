@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "strict": true, //Da B.O no Zod se tiver false
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
@@ -12,10 +13,11 @@
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
+    // "strictNullChecks": false, //Da B.O no Zod
+    "noImplicitAny": true,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "strictPropertyInitialization": false
   }
 }

@@ -1,8 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 datasource db {
-  provider = "sqlite"
+  provider = "postgres"
   url      = env("DATABASE_URL")
 }
 
@@ -10,21 +7,115 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model GeneralUser {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  name      String
-  role      Roles?   @relation(fields: [roleId], references: [id])
-  roleId    Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+model User {
+  id          String       @id @unique @default(uuid())
+  email       String       @unique
+  password    String
+  name        String
+  cpfCnpj     String       @map("cpf_cnpj")
+  role        Role         @default(USER)
+  createdAt   DateTime     @map("created_at") @default(now())
+  updatedAt   DateTime     @map("updated_at") @default(now()) @updatedAt
+  events      Event[]
+  soldTickets SoldTicket[]
+
+  @@map("user")
 }
 
-model Roles {
-  id          Int           @id @default(autoincrement())
-  role        String        @unique
-  generalUser GeneralUser[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @default(now()) @updatedAt
+model Event {
+  id            String        @id @unique @default(uuid())
+
+  tittle        String
+  description   String
+  eventCategory EventCategory @map("event_category")
+  published     Boolean
+  visible       Boolean       @default(false)
+
+  user          User          @relation(fields: [userId], references: [id])
+  userId        String        @map("user_id")
+
+  startsAt      DateTime      @map("starts_at")
+  expiresAt     DateTime      @map("expires_at")
+  createdAt     DateTime      @map("created_at") @default(now())
+  updatedAt     DateTime      @map("updated_at") @default(now()) @updatedAt
+
+  soldTickets   SoldTicket[]
+  eventTickets  EventTicket[]
+
+  @@map("event")
+}
+
+model EventTicket {
+  id            String  @id @unique @default(uuid())
+
+  tittle        String
+  description   String
+  price         Int
+  initialAmount Int
+  amountSold    Int      @map("amount_sold")
+  visible       Boolean  @default(false)
+
+  event         Event    @relation(fields: [eventId], references: [id])
+  eventId       String   @map("event_id")
+
+  startsAt      DateTime @map("starts_at")
+  expiresAt     DateTime @map("expires_at")
+  createdAt     DateTime @map("created_at") @default(now())
+  updatedAt     DateTime @map("updated_at") @default(now()) @updatedAt
+
+  soldTickets   SoldTicket[]
+
+  @@map("event_ticket")
+}
+
+model SoldTicket {
+  id              String      @id @unique @default(uuid())
+
+  tittle          String
+  description     String
+  price           Int
+  amountAvailable Int         @map("amount_available")
+
+  eventTicket     EventTicket @relation(fields: [eventTicketId], references: [id])
+  event           Event       @relation(fields: [eventId], references: [id])
+  user            User        @relation(fields: [userId], references: [id])
+  eventId         String      @map("event_id")
+  eventTicketId   String      @map("event_ticket_id")
+  userId          String      @map("user_id")
+
+  startsAt        DateTime    @map("starts_at")
+  expiresAt       DateTime    @map("expires_at")
+  createdAt       DateTime    @map("created_at") @default(now())
+  updatedAt       DateTime    @map("updated_at") @default(now()) @updatedAt
+
+  @@map("sold_ticket")
+}
+
+enum EventCategory {
+  OUTRO
+  SHOW
+  CASAMENTO
+  ANIVERSARIO
+  FESTA
+  CONGRESSO
+  CONFERENCIA
+  CONVENCAO
+  ENCONTRO
+  FEIRA
+  FESTIVAL
+  LANCAMENTO
+  REUNIAO
+  SEMINARIO
+  WORKSHOP
+  CONCURSO
+
+  @@map("event_category")
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  USER
+
+  @@map("role")
 }
