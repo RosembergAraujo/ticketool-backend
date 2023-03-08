@@ -1,7 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import * as process from 'process';
-import { GENERAL_USER_TOKEN_TIME_TO_EXPIRE } from 'src/Constants/AppConstants';
+import { GENERAL_USER_TOKEN_TIME_TO_EXPIRE } from 'src/constants/app.constants';
 import { UserModule } from '../user/user.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';

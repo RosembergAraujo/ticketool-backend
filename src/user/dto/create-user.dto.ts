@@ -1,5 +1,5 @@
 import { Role } from '@prisma/client';
-import { z } from 'zod';
+import { object, string, z } from 'zod';
 
 // export class CreateUserDto {
 //   email: string;
@@ -13,25 +13,22 @@ import { z } from 'zod';
 //   role?: Role;
 // }
 
-export const createUserDtoSchema = z.object({
-  email: z
-    .string()
+export const createUserDtoSchema = object({
+  email: string()
     .min(3, { message: 'Email field must be not empty' })
     .email({ message: 'Must be a valid email' })
     .transform((e) => e.toLocaleLowerCase()),
-  password: z
-    .string()
+  password: string()
     .min(6, { message: 'Password field can not have less then 6 characters' })
-    .regex(/((?=.*d)|(?=.*W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-      message: 'Password must be more complex',
+    .regex(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+      message:
+        'Password must have a uppercase letter, a lowercase letter and a number or special character',
     }),
-  name: z.string().min(1, { message: 'Name field must be not empty' }),
-  cpfCnpj: z
-    .string()
-    .regex(
-      /^([0-9]{3}\.?[0-9]{3}\.?[0-9]{3}\-?[0-9]{2}|[0-9]{2}\.?[0-9]{3}\.?[0-9]{3}\/?[0-9]{4}\-?[0-9]{2})$/,
-      { message: 'Must be a valid CPF or CPNJ' },
-    ),
+  name: string().min(1, { message: 'Name field must be not empty' }),
+  cpfCnpj: string().regex(
+    /^([0-9]{3}\.?[0-9]{3}\.?[0-9]{3}\-?[0-9]{2}|[0-9]{2}\.?[0-9]{3}\.?[0-9]{3}\/?[0-9]{4}\-?[0-9]{2})$/,
+    { message: 'Must be a valid CPF or CPNJ' },
+  ),
   role: z.enum([Role.ADMIN, Role.MANAGER, Role.USER]),
 });
 
