@@ -8,7 +8,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   constructor(private reflector: Reflector) {
     super();
   }
-  handleRequest(err, user, info, context) {
+  handleRequest(err: any, user: any, info: any, context: any) {
     const isPublic = this.reflector.get<string[]>(
       IS_PUBLIC_KEY,
       context.getHandler(),

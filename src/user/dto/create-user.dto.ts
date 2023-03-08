@@ -1,39 +1,35 @@
-import {
-  IsEmail,
-  IsEnum,
-  IsString,
-  Matches,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
-import { Role } from '../entities/role.entity';
-import { User } from '../entities/user.entity';
+import { Role } from '@prisma/client';
+import { object, string, z } from 'zod';
 
-export class CreateUserDto extends User {
-  @MinLength(4)
-  @MaxLength(320)
-  @IsEmail()
-  email: string;
+// export class CreateUserDto {
+//   email: string;
 
-  @MinLength(6)
-  @MaxLength(23)
-  @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-    message: 'password too weak',
-  })
-  @IsString()
-  password: string;
+//   password: string;
 
-  @MinLength(3)
-  @MaxLength(25)
-  @IsString()
-  name: string;
+//   name: string;
 
-  @MinLength(11)
-  @MaxLength(23)
-  @IsString()
-  cpfCnpj: string;
+//   cpfCnpj: string;
 
-  @IsString()
-  @IsEnum(Role)
-  role: Role;
-}
+//   role?: Role;
+// }
+
+export const createUserDtoSchema = object({
+  email: string()
+    .min(3, { message: 'Email field must be not empty' })
+    .email({ message: 'Must be a valid email' })
+    .transform((e) => e.toLocaleLowerCase()),
+  password: string()
+    .min(6, { message: 'Password field can not have less then 6 characters' })
+    .regex(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+      message:
+        'Password must have a uppercase letter, a lowercase letter and a number or special character',
+    }),
+  name: string().min(1, { message: 'Name field must be not empty' }),
+  cpfCnpj: string().regex(
+    /^([0-9]{3}\.?[0-9]{3}\.?[0-9]{3}\-?[0-9]{2}|[0-9]{2}\.?[0-9]{3}\.?[0-9]{3}\/?[0-9]{4}\-?[0-9]{2})$/,
+    { message: 'Must be a valid CPF or CPNJ' },
+  ),
+  role: z.enum([Role.ADMIN, Role.MANAGER, Role.USER]),
+});
+
+export type CreateUserDto = z.infer<typeof createUserDtoSchema>;

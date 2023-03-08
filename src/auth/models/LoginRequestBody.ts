@@ -1,9 +1,13 @@
-import { IsEmail, IsString } from 'class-validator';
+import { z } from 'zod';
 
-export class LoginRequestBody {
-  @IsEmail()
-  email: string;
+// export class LoginRequestBody {
+//   email: string;
+//   password: string;
+// }
 
-  @IsString()
-  password: string;
-}
+export const loginRequestBodySchema = z.object({
+  email: z.string().email(),
+  password: z.string(),
+});
+
+export type LoginRequestBody = z.infer<typeof loginRequestBodySchema>;
