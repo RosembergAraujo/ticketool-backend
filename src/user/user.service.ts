@@ -12,12 +12,13 @@ import { UpdateUserDto, updateUserDtoSchema } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { helpers } from './helpers/helpers';
 
-// import { User } from './entities/user.entity';
-
 @Injectable()
 export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
-  async create(createUserDto: CreateUserDto, userPayload: UserPayload) {
+  async create(
+    createUserDto: CreateUserDto,
+    userPayload: UserPayload,
+  ): Promise<responseUser> {
     try {
       const data: CreateUserDto = createUserDtoSchema.parse({
         ...createUserDto,
@@ -33,7 +34,7 @@ export class UserService {
       };
     } catch (err: any) {
       helpers.handleExeption(err);
-      const errorStatus = err?.status
+      const errorStatus: any = err?.status
         ? err.status
         : HttpStatus.INTERNAL_SERVER_ERROR;
       throw new HttpException(
@@ -84,7 +85,7 @@ export class UserService {
     id: string,
     userFromReq: UpdateUserDto,
     userFromJwt: UserPayload,
-  ) {
+  ): Promise<responseUser> {
     try {
       helpers.checkRolePermission(id, userFromJwt);
       const userFromDatabase: User | null =
@@ -121,7 +122,7 @@ export class UserService {
       throw new UserNotFoundException();
     } catch (err: any) {
       helpers.handleExeption(err);
-      const errorStatus = err?.status
+      const errorStatus: any = err?.status
         ? err.status
         : HttpStatus.INTERNAL_SERVER_ERROR;
       throw new HttpException(
@@ -147,7 +148,7 @@ export class UserService {
     } catch (err: any) {
       helpers.handleExeption(err);
       console.log(err);
-      const errorStatus = err?.status
+      const errorStatus: any = err?.status
         ? err.status
         : HttpStatus.INTERNAL_SERVER_ERROR;
       throw new HttpException(
