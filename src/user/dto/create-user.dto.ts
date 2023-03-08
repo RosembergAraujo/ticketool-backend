@@ -1,23 +1,11 @@
 import { Role } from '@prisma/client';
 import { object, string, z } from 'zod';
 
-// export class CreateUserDto {
-//   email: string;
-
-//   password: string;
-
-//   name: string;
-
-//   cpfCnpj: string;
-
-//   role?: Role;
-// }
-
 export const createUserDtoSchema = object({
   email: string()
     .min(3, { message: 'Email field must be not empty' })
     .email({ message: 'Must be a valid email' })
-    .transform((e) => e.toLocaleLowerCase()),
+    .transform((e: string): string => e.toLocaleLowerCase()),
   password: string()
     .min(6, { message: 'Password field can not have less then 6 characters' })
     .regex(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
