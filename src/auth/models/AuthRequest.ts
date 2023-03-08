@@ -1,5 +1,4 @@
-import { Request } from 'express';
-import { User } from '../../user/entities/user.entity';
+import { User } from '@prisma/client';
 
 export class AuthRequest extends Request {
   //Render burro pqp
