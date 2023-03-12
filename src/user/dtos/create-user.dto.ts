@@ -1,5 +1,6 @@
-import { Role } from '@prisma/client';
+// import { Role } from '@prisma/client';
 import { object, string, z } from 'zod';
+import { Role } from '../entities/role.entity';
 
 export const createUserDtoSchema = object({
   email: string()
@@ -17,7 +18,7 @@ export const createUserDtoSchema = object({
     /^([0-9]{3}\.?[0-9]{3}\.?[0-9]{3}\-?[0-9]{2}|[0-9]{2}\.?[0-9]{3}\.?[0-9]{3}\/?[0-9]{4}\-?[0-9]{2})$/,
     { message: 'Must be a valid CPF or CPNJ' },
   ),
-  role: z.enum([Role.ADMIN, Role.MANAGER, Role.USER]),
+  role: z.nativeEnum(Role),
 });
 
 export type CreateUserDto = z.infer<typeof createUserDtoSchema>;

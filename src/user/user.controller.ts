@@ -11,9 +11,9 @@ import {
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { IsPublic } from 'src/auth/decorators/is-public.decorator';
 import { UserPayload } from 'src/auth/models/UserPayload';
-import { CreateUserDto } from './dto/create-user.dto';
-import { responseUser } from './dto/response-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from './dtos/create-user.dto';
+import { responseUser } from './dtos/response-user.dto';
+import { UpdateUserDto } from './dtos/update-user.dto';
 import { UserService } from './user.service';
 
 @Controller('user')

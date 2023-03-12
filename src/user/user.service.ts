@@ -1,16 +1,19 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Role } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
 import { UserPayload } from 'src/auth/models/UserPayload';
-import { SALT_ROUNDS } from 'src/constants/app.constants';
 import { DuplicatedEmailException } from 'src/exeptions/duplicated-email.exception';
 import { UserNotFoundException } from 'src/exeptions/user-not-found.exception';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateUserDto, createUserDtoSchema } from './dto/create-user.dto';
-import { responseUser } from './dto/response-user.dto';
-import { UpdateUserDto, updateUserDtoSchema } from './dto/update-user.dto';
+import { CreateUserDto, createUserDtoSchema } from './dtos/create-user.dto';
+import { responseUser } from './dtos/response-user.dto';
+import { UpdateUserDto, updateUserDtoSchema } from './dtos/update-user.dto';
+import { Role } from './entities/role.entity';
 import { User } from './entities/user.entity';
 import { helpers } from './helpers/helpers';
+import {
+  checkCanCreateWithoutAuth,
+  checkRolePermission,
+} from './utils/RoleValidation';
+import { createPasswordHashed } from './utils/password';
 
 @Injectable()
 export class UserService {
@@ -24,8 +27,8 @@ export class UserService {
         ...createUserDto,
         role: createUserDto.role || Role.USER,
       });
-      data.password = await bcrypt.hash(data.password, SALT_ROUNDS);
-      helpers.checkCanCreateWithoutAuth(data.role, userPayload);
+      data.password = await createPasswordHashed(data.password);
+      checkCanCreateWithoutAuth(data.role as Role, userPayload);
       const createdUser: User = await this.prismaService.user.create({ data });
       return {
         ...createdUser,
@@ -69,7 +72,7 @@ export class UserService {
     id: string,
     userFromJwt: UserPayload,
   ): Promise<responseUser | null> {
-    helpers.checkRolePermission(id, userFromJwt);
+    checkRolePermission(id, userFromJwt);
     const userFound: User | null = await this.prismaService.user.findUnique({
       where: { id },
     });
@@ -87,7 +90,7 @@ export class UserService {
     userFromJwt: UserPayload,
   ): Promise<responseUser> {
     try {
-      helpers.checkRolePermission(id, userFromJwt);
+      checkRolePermission(id, userFromJwt);
       const userFromDatabase: User | null =
         await this.prismaService.user.findUnique({
           where: { id },
@@ -108,7 +111,7 @@ export class UserService {
           if (userFoundByEmail) throw new DuplicatedEmailException();
         }
         if (userFromReq.password)
-          data.password = await bcrypt.hash(userFromReq.password, SALT_ROUNDS);
+          data.password = await createPasswordHashed(userFromReq.password);
         const updatedUser: User = await this.prismaService.user.update({
           where: { id },
           data,
@@ -139,7 +142,7 @@ export class UserService {
   }
 
   async remove(id: string, userFromJwt: UserPayload): Promise<void> {
-    helpers.checkRolePermission(id, userFromJwt);
+    checkRolePermission(id, userFromJwt);
     try {
       await this.prismaService.user.delete({
         where: { id },
