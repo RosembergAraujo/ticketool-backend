@@ -1,12 +1,12 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { IsPublic } from 'src/auth/decorators/is-public.decorator';
 import { UserPayload } from 'src/auth/models/UserPayload';
-import { CreateEventEntityDto } from './dtos/create-event-entity.dto';
+import { CreateEventEntityDtoInput } from './dtos/create-event-entity.dto';
 import { EventEntity } from './entities/event-entity.entity';
 import { EventEntityService } from './event-entity.service';
 
-@Controller('event-entity')
+@Controller('event_entity')
 export class EventEntityController {
   constructor(private readonly _eventEntityService: EventEntityService) {}
 
@@ -14,20 +14,21 @@ export class EventEntityController {
   @Post()
   create(
     @CurrentUser() userFromJwt: UserPayload,
-    @Body() createEventEntityDto: CreateEventEntityDto,
+    @Body() createEventEntityDto: CreateEventEntityDtoInput,
   ): Promise<EventEntity> {
     return this._eventEntityService.create(createEventEntityDto, userFromJwt);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.eventEntityService.findAll();
-  // }
+  @IsPublic()
+  @Get('public_events')
+  findAllPublicEvents(): Promise<EventEntity[]> {
+    return this._eventEntityService.findAllPublicEvents();
+  }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.eventEntityService.findOne(+id);
-  // }
+  @Get(':id')
+  findOne(@Param('id') id: string, @CurrentUser() userFromJwt: UserPayload) {
+    return this._eventEntityService.findById(id, userFromJwt);
+  }
 
   // @Patch(':id')
   // update(

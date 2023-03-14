@@ -6,6 +6,7 @@ import { helpers } from 'src/user/helpers/helpers';
 import { checkCanCreateWithoutAuth } from 'src/user/utils/RoleValidation';
 import {
   CreateEventEntityDto,
+  CreateEventEntityDtoInput,
   createEventEntityDtoSchema,
 } from './dtos/create-event-entity.dto';
 import { EventEntity } from './entities/event-entity.entity';
@@ -14,7 +15,7 @@ import { EventEntity } from './entities/event-entity.entity';
 export class EventEntityService {
   constructor(private readonly prismaService: PrismaService) {}
   async create(
-    createEventEntityDto: CreateEventEntityDto,
+    createEventEntityDto: CreateEventEntityDtoInput,
     userPayload: UserPayload,
   ): Promise<EventEntity> {
     try {
@@ -45,12 +46,21 @@ export class EventEntityService {
     }
   }
 
-  findAll() {
-    return `This action returns all eventEntity`;
+  async findAllPublicEvents(): Promise<EventEntity[]> {
+    return await this.prismaService.eventEntity.findMany({
+      where: {
+        published: true,
+        visible: true,
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} eventEntity`;
+  async findById(id: string, userFromJwt: UserPayload) {
+    return await this.prismaService.eventEntity.findUnique({
+      where: {
+        id,
+      },
+    });
   }
 
   // update(id: number, updateEventEntityDto: UpdateEventEntityDto) {
