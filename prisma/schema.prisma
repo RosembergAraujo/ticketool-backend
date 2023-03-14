@@ -8,61 +8,65 @@ generator client {
 }
 
 model User {
-  id          String       @id @unique @default(uuid())
-  email       String       @unique
+  id          String        @id @unique @default(uuid())
+  email       String        @unique
   password    String
   name        String
-  cpfCnpj     String       @map("cpf_cnpj")
-  role        Role         @default(USER)
-  createdAt   DateTime     @map("created_at") @default(now())
-  updatedAt   DateTime     @map("updated_at") @default(now()) @updatedAt
+  cpfCnpj     String        @map("cpf_cnpj")
+  role        Role          @default(USER)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @default(now()) @updatedAt @map("updated_at")
   events      EventEntity[]
   soldTickets SoldTicket[]
+  CanGetEvent CanGetEvent[]
 
   @@map("user")
 }
 
 model EventEntity {
   id            String        @id @unique @default(uuid())
-
   tittle        String
   description   String
   eventCategory EventCategory @map("event_category")
   published     Boolean
   visible       Boolean       @default(false)
-
   user          User          @relation(fields: [userId], references: [id])
   userId        String        @map("user_id")
-
   startsAt      DateTime      @map("starts_at")
   expiresAt     DateTime      @map("expires_at")
-  createdAt     DateTime      @map("created_at") @default(now())
-  updatedAt     DateTime      @map("updated_at") @default(now()) @updatedAt
-
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @default(now()) @updatedAt @map("updated_at")
   soldTickets   SoldTicket[]
   eventTickets  EventTicket[]
+  CanGetEvent   CanGetEvent[]
 
   @@map("event_entity")
 }
 
-model EventTicket {
-  id            String     @id @unique @default(uuid())
+model CanGetEvent {
+  id      Int         @id @default(autoincrement())
+  user    User        @relation(fields: [userId], references: [id])
+  userId  String      @map("user_id")
+  event   EventEntity @relation(fields: [eventId], references: [id])
+  eventId String      @map("event_id")
 
+  @@map("can_get_event")
+}
+
+model EventTicket {
+  id            String       @id @unique @default(uuid())
   tittle        String
   description   String
   price         Int
   initialAmount Int
-  amountSold    Int         @map("amount_sold")
-  visible       Boolean     @default(false)
-
-  event         EventEntity @relation(fields: [eventId], references: [id])
-  eventId       String      @map("event_id")
-
-  startsAt      DateTime    @map("starts_at")
-  expiresAt     DateTime    @map("expires_at")
-  createdAt     DateTime    @map("created_at") @default(now())
-  updatedAt     DateTime    @map("updated_at") @default(now()) @updatedAt
-
+  amountSold    Int          @map("amount_sold")
+  visible       Boolean      @default(false)
+  event         EventEntity  @relation(fields: [eventId], references: [id])
+  eventId       String       @map("event_id")
+  startsAt      DateTime     @map("starts_at")
+  expiresAt     DateTime     @map("expires_at")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @default(now()) @updatedAt @map("updated_at")
   soldTickets   SoldTicket[]
 
   @@map("event_ticket")
@@ -70,23 +74,20 @@ model EventTicket {
 
 model SoldTicket {
   id              String      @id @unique @default(uuid())
-
   tittle          String
   description     String
   price           Int
   amountAvailable Int         @map("amount_available")
-
   eventTicket     EventTicket @relation(fields: [eventTicketId], references: [id])
   event           EventEntity @relation(fields: [eventId], references: [id])
   user            User        @relation(fields: [userId], references: [id])
   eventId         String      @map("event_id")
   eventTicketId   String      @map("event_ticket_id")
   userId          String      @map("user_id")
-
   startsAt        DateTime    @map("starts_at")
   expiresAt       DateTime    @map("expires_at")
-  createdAt       DateTime    @map("created_at") @default(now())
-  updatedAt       DateTime    @map("updated_at") @default(now()) @updatedAt
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @default(now()) @updatedAt @map("updated_at")
 
   @@map("sold_ticket")
 }

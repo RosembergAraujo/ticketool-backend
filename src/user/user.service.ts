@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserPayload } from 'src/auth/models/UserPayload';
 import { DuplicatedEmailException } from 'src/exeptions/duplicated-email.exception';
-import { UserNotFoundException } from 'src/exeptions/user-not-found.exception';
+import { NotFoundException } from 'src/exeptions/user-not-found.exception';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto, createUserDtoSchema } from './dtos/create-user.dto';
 import { responseUser } from './dtos/response-user.dto';
@@ -81,7 +81,7 @@ export class UserService {
         ...userFound,
         password: undefined,
       };
-    throw new UserNotFoundException();
+    throw new NotFoundException();
   }
 
   async update(
@@ -122,7 +122,7 @@ export class UserService {
           role: undefined,
         };
       }
-      throw new UserNotFoundException();
+      throw new NotFoundException();
     } catch (err: any) {
       helpers.handleExeption(err);
       const errorStatus: any = err?.status

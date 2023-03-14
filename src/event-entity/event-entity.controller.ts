@@ -25,8 +25,12 @@ export class EventEntityController {
     return this._eventEntityService.findAllPublicEvents();
   }
 
+  @IsPublic()
   @Get(':id')
-  findOne(@Param('id') id: string, @CurrentUser() userFromJwt: UserPayload) {
+  async findOne(
+    @Param('id') id: string,
+    @CurrentUser() userFromJwt: UserPayload,
+  ): Promise<EventEntity> {
     return this._eventEntityService.findById(id, userFromJwt);
   }
 

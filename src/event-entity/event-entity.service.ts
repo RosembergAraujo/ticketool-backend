@@ -1,7 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { CanGetEvent } from '@prisma/client';
 import { UserPayload } from 'src/auth/models/UserPayload';
+import { ForbiddenException } from 'src/exeptions/forbidden.exception';
+import { NotFoundException } from 'src/exeptions/user-not-found.exception';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Role } from 'src/user/entities/role.entity';
+import { HIGH_PRIVILEGES_APP_ROLES, Role } from 'src/user/entities/role.entity';
 import { helpers } from 'src/user/helpers/helpers';
 import { checkCanCreateWithoutAuth } from 'src/user/utils/RoleValidation';
 import {
@@ -55,12 +58,50 @@ export class EventEntityService {
     });
   }
 
-  async findById(id: string, userFromJwt: UserPayload) {
-    return await this.prismaService.eventEntity.findUnique({
-      where: {
-        id,
-      },
-    });
+  async findById(id: string, userFromJwt: UserPayload): Promise<EventEntity> {
+    try {
+      const eventEntityFromDatabase: EventEntity | null =
+        await this.prismaService.eventEntity.findUnique({
+          where: {
+            id,
+          },
+        });
+      if (eventEntityFromDatabase) {
+        if (
+          (eventEntityFromDatabase.published &&
+            eventEntityFromDatabase.visible) ||
+          userFromJwt.id === eventEntityFromDatabase.userId ||
+          HIGH_PRIVILEGES_APP_ROLES.includes(userFromJwt.role as Role)
+        ) {
+          return eventEntityFromDatabase;
+        }
+        const canSeeEvent: CanGetEvent | null =
+          await this.prismaService.canGetEvent.findFirst({
+            where: {
+              userId: userFromJwt.id,
+              eventId: eventEntityFromDatabase.id,
+            },
+          });
+        if (canSeeEvent) return eventEntityFromDatabase;
+        throw new ForbiddenException();
+      }
+      throw new NotFoundException();
+    } catch (err: any) {
+      helpers.handleExeption(err);
+      const errorStatus: any = err?.status
+        ? err.status
+        : HttpStatus.INTERNAL_SERVER_ERROR;
+      throw new HttpException(
+        {
+          status: errorStatus,
+          error: err.message,
+        },
+        errorStatus,
+        {
+          cause: err,
+        },
+      );
+    }
   }
 
   // update(id: number, updateEventEntityDto: UpdateEventEntityDto) {
