@@ -6,8 +6,8 @@ import { z } from 'zod';
 // }
 
 export const loginRequestBodySchema = z.object({
-  email: z.string().email(),
-  password: z.string(),
+    email: z.string().email(),
+    password: z.string(),
 });
 
 export type LoginRequestBody = z.infer<typeof loginRequestBodySchema>;

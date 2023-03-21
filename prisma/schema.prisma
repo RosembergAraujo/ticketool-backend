@@ -8,49 +8,50 @@ generator client {
 }
 
 model User {
-  id          String        @id @unique @default(uuid())
-  email       String        @unique
-  password    String
-  name        String
-  cpfCnpj     String        @map("cpf_cnpj")
-  role        Role          @default(USER)
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime      @default(now()) @updatedAt @map("updated_at")
-  events      EventEntity[]
-  soldTickets SoldTicket[]
-  CanGetEvent CanGetEvent[]
+  id                String              @id @unique @default(uuid())
+  email             String              @unique
+  password          String
+  name              String
+  cpfCnpj           String              @map("cpf_cnpj")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @default(now()) @updatedAt @map("updated_at")
+  role              Role                @default(USER)
+  events            EventEntity[]
+  soldTickets       SoldTicket[]
+  PrivateEventGuest PrivateEventGuest[]
 
   @@map("user")
 }
 
 model EventEntity {
-  id            String        @id @unique @default(uuid())
-  tittle        String
-  description   String
-  eventCategory EventCategory @map("event_category")
-  published     Boolean
-  visible       Boolean       @default(false)
-  user          User          @relation(fields: [userId], references: [id])
-  userId        String        @map("user_id")
-  startsAt      DateTime      @map("starts_at")
-  expiresAt     DateTime      @map("expires_at")
-  createdAt     DateTime      @default(now()) @map("created_at")
-  updatedAt     DateTime      @default(now()) @updatedAt @map("updated_at")
-  soldTickets   SoldTicket[]
-  eventTickets  EventTicket[]
-  CanGetEvent   CanGetEvent[]
+  id                String              @id @unique @default(uuid())
+  tittle            String
+  description       String
+  published         Boolean
+  visible           Boolean             @default(false)
+  isPublic          Boolean             @default(true) @map("is_public")
+  startsAt          DateTime            @map("starts_at")
+  expiresAt         DateTime            @map("expires_at")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @default(now()) @updatedAt @map("updated_at")
+  userId            String              @map("user_id")
+  eventCategory     EventCategory       @map("event_category")
+  user              User                @relation(fields: [userId], references: [id])
+  soldTickets       SoldTicket[]
+  eventTickets      EventTicket[]
+  PrivateEventGuest PrivateEventGuest[]
 
   @@map("event_entity")
 }
 
-model CanGetEvent {
+model PrivateEventGuest {
   id      Int         @id @default(autoincrement())
   user    User        @relation(fields: [userId], references: [id])
   userId  String      @map("user_id")
   event   EventEntity @relation(fields: [eventId], references: [id])
   eventId String      @map("event_id")
 
-  @@map("can_get_event")
+  @@map("private_event_guest")
 }
 
 model EventTicket {
@@ -61,12 +62,12 @@ model EventTicket {
   initialAmount Int
   amountSold    Int          @map("amount_sold")
   visible       Boolean      @default(false)
-  event         EventEntity  @relation(fields: [eventId], references: [id])
   eventId       String       @map("event_id")
   startsAt      DateTime     @map("starts_at")
   expiresAt     DateTime     @map("expires_at")
   createdAt     DateTime     @default(now()) @map("created_at")
   updatedAt     DateTime     @default(now()) @updatedAt @map("updated_at")
+  event         EventEntity  @relation(fields: [eventId], references: [id])
   soldTickets   SoldTicket[]
 
   @@map("event_ticket")
