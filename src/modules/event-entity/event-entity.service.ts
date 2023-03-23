@@ -35,7 +35,7 @@ export class EventEntityService {
     async create(
         createEventEntityDto: CreateEventEntityDtoInput,
         userPayload: UserPayload,
-    ): Promise<EventEntity> {
+    ): Promise<VizualizationEventEntityDto> {
         try {
             const data: CreateEventEntityDto =
                 createEventEntityDtoSchema.parse(createEventEntityDto);
@@ -46,8 +46,11 @@ export class EventEntityService {
                         ...data,
                         userId: userPayload.id,
                     },
+                    include: {
+                        user: true,
+                    },
                 });
-            return createdEventEntity;
+            return vizualizationEventEntityDtoSchema.parse(createdEventEntity);
         } catch (err: any) {
             ExeptionHelpers.handleExeption(err);
             const errorStatus: any = err?.status

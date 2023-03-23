@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    Param,
+    Post,
+} from '@nestjs/common';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { IsPublic } from 'src/auth/decorators/is-public.decorator';
 import { UserPayload } from 'src/auth/models/UserPayload';
@@ -16,7 +24,7 @@ export class EventEntityController {
     create(
         @CurrentUser() userFromJwt: UserPayload,
         @Body() createEventEntityDto: CreateEventEntityDtoInput,
-    ): Promise<EventEntity> {
+    ): Promise<VizualizationEventEntityDto> {
         return this._eventEntityService.create(
             createEventEntityDto,
             userFromJwt,
@@ -44,10 +52,7 @@ export class EventEntityController {
         @Param('id') id: string,
         @CurrentUser() userFromJwt: UserPayload,
     ): Promise<void> {
-        return this._eventEntityService.remove(
-            id,
-            userFromJwt,
-        );
+        return this._eventEntityService.remove(id, userFromJwt);
     }
 
     // @Patch(':id')
