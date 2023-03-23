@@ -154,10 +154,8 @@ export class UserService {
             await this._prismaService.user.delete({
                 where: { id },
             });
-            return;
         } catch (err: any) {
             ExeptionHelpers.handleExeption(err);
-            console.log(err);
             const errorStatus: any = err?.status
                 ? err.status
                 : HttpStatus.INTERNAL_SERVER_ERROR;

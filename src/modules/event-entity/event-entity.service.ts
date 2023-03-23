@@ -10,6 +10,7 @@ import {
     Role,
 } from 'src/modules/user/entities/role.entity';
 import { checkCanCreateWithoutAuth } from 'src/modules/user/utils/RoleValidation';
+import { PrivateEventsGuestHelpers } from '../private-event-guest/helpers/private-events-guest.helpers';
 import {
     CreateEventEntityDto,
     CreateEventEntityDtoInput,
@@ -23,23 +24,30 @@ import { EventEntity } from './entities/event-entity.entity';
 
 @Injectable()
 export class EventEntityService {
-    constructor(private readonly _prismaService: PrismaService) {}
+    constructor(
+        private readonly _privateEventsGuestHelpers: PrivateEventsGuestHelpers,
+        private readonly _prismaService: PrismaService,
+    ) {
+        _privateEventsGuestHelpers = new PrivateEventsGuestHelpers(
+            _prismaService,
+        );
+    }
     async create(
         createEventEntityDto: CreateEventEntityDtoInput,
         userPayload: UserPayload,
     ): Promise<EventEntity> {
         try {
-            const data: CreateEventEntityDto = createEventEntityDtoSchema.parse(
-                {
-                    ...createEventEntityDto,
-                },
-            );
+            const data: CreateEventEntityDto =
+                createEventEntityDtoSchema.parse(createEventEntityDto);
             checkCanCreateWithoutAuth(userPayload.role as Role, userPayload);
             const createdEventEntity: EventEntity =
-                await this._prismaService.eventEntity.create({ data });
-            return {
-                ...createdEventEntity,
-            };
+                await this._prismaService.eventEntity.create({
+                    data: {
+                        ...data,
+                        userId: userPayload.id,
+                    },
+                });
+            return createdEventEntity;
         } catch (err: any) {
             ExeptionHelpers.handleExeption(err);
             const errorStatus: any = err?.status
@@ -106,6 +114,33 @@ export class EventEntityService {
                 throw new ForbiddenException();
             }
             throw new NotFoundException();
+        } catch (err: any) {
+            ExeptionHelpers.handleExeption(err);
+            const errorStatus: any = err?.status
+                ? err.status
+                : HttpStatus.INTERNAL_SERVER_ERROR;
+            throw new HttpException(
+                {
+                    status: errorStatus,
+                    error: err.message,
+                },
+                errorStatus,
+                {
+                    cause: err,
+                },
+            );
+        }
+    }
+
+    async remove(id: string, userFromJwt: UserPayload): Promise<void> {
+        try {
+            const validOwnership: boolean | HttpException =
+                await this._privateEventsGuestHelpers.checkEventValidOwnershipOfEvent(
+                    id,
+                    userFromJwt,
+                );
+            if (validOwnership instanceof HttpException) throw validOwnership;
+            await this._prismaService.eventEntity.delete({ where: { id } });
         } catch (err: any) {
             ExeptionHelpers.handleExeption(err);
             const errorStatus: any = err?.status

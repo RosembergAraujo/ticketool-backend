@@ -1,7 +1,16 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    Param,
+    Post,
+} from '@nestjs/common';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { UserPayload } from 'src/auth/models/UserPayload';
 import { CreatePrivateEventGuestDto } from './dto/create-private-event-guest.dto';
+import { DeletePrivateEventGuestDto } from './dto/delete-private-event-guest.dto';
 import { ResponsePrivateEventGuestDto } from './dto/visualization-private-event-guest.dto';
 import { PrivateEventGuest } from './entities/private-event-guest.entity';
 import { PrivateEventGuestService } from './private-event-guest.service';
@@ -34,6 +43,17 @@ export class PrivateEventGuestController {
         );
     }
 
+    @Delete()
+    @HttpCode(204)
+    delete(
+        @Body() deletePrivateEventGuestDto: DeletePrivateEventGuestDto,
+        @CurrentUser() userFromJwt: UserPayload,
+    ): Promise<void> {
+        return this._privateEventGuestService.remove(
+            deletePrivateEventGuestDto,
+            userFromJwt,
+        );
+    }
     // @Get('/check_can-get-event')
     // findAll() {}
 }

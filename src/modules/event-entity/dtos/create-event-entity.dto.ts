@@ -10,9 +10,6 @@ export const createEventEntityDtoSchema = z.object({
     published: z.boolean(),
     visible: z.boolean(),
     isPublic: z.boolean(),
-    userId: string()
-        .min(1, { message: 'Must have a user' })
-        .uuid({ message: 'Must be a valid UUID' }),
     startsAt: z
         .string()
         .min(1, { message: 'StartsAt field must be not empty' })

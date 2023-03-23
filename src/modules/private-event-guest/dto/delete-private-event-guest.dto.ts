@@ -1,10 +1,10 @@
-import { object, string, z } from 'zod';
+import { z } from 'zod';
 
-export const createPrivateEventGuestDtoSchema = object({
-    userId: string().uuid(),
-    eventId: string().uuid(),
+export const deletePrivateEventGuestDtoSchema = z.object({
+    userId: z.string().uuid(),
+    eventId: z.string().uuid(),
 });
 
-export type CreatePrivateEventGuestDto = z.infer<
-    typeof createPrivateEventGuestDtoSchema
+export type DeletePrivateEventGuestDto = z.infer<
+    typeof deletePrivateEventGuestDtoSchema
 >;

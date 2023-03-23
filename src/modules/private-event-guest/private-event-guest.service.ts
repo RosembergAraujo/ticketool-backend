@@ -8,6 +8,7 @@ import {
     CreatePrivateEventGuestDto,
     createPrivateEventGuestDtoSchema,
 } from './dto/create-private-event-guest.dto';
+import { DeletePrivateEventGuestDto } from './dto/delete-private-event-guest.dto';
 import {
     ResponsePrivateEventGuestDto,
     responsePrivateEventGuestDtoSchema,
@@ -37,11 +38,12 @@ export class PrivateEventGuestService {
                 createPrivateEventGuestDtoSchema.parse(
                     createPrivateEventGuestDto,
                 );
-            await this._privateEventsGuestHelpers.checkEventValidOwnershipOfEvent(
-                data.eventId,
-                // data.userId,
-                userFromJwt,
-            );
+            const validOwnership: boolean | HttpException =
+                await this._privateEventsGuestHelpers.checkEventValidOwnershipOfEvent(
+                    data.eventId,
+                    userFromJwt,
+                );
+            if (validOwnership instanceof HttpException) throw validOwnership;
             const createdPrivateEventGuest: PrivateEventGuest =
                 await this._prismaService.privateEventGuest.create({ data });
             return {
@@ -80,10 +82,12 @@ export class PrivateEventGuestService {
                 throw new NotFoundException(
                     'A list for this event was not found',
                 );
-            await this._privateEventsGuestHelpers.checkEventValidOwnershipOfEvent(
-                eventId,
-                userFromJwt,
-            );
+            const validOwnership: boolean | HttpException =
+                await this._privateEventsGuestHelpers.checkEventValidOwnershipOfEvent(
+                    eventId,
+                    userFromJwt,
+                );
+            if (validOwnership instanceof HttpException) throw validOwnership;
             const response: PrivateEventGuestFromDatabase[] =
                 await this._prismaService.privateEventGuest.findMany({
                     where: {
@@ -114,7 +118,38 @@ export class PrivateEventGuestService {
         }
     }
 
-    // remove(id: number) {
-    //   return `This action removes a #${id} whoCanGetEvent`;
-    // }
+    async remove(
+        deletePrivateEventGuestDto: DeletePrivateEventGuestDto,
+        userFromJwt: UserPayload,
+    ): Promise<void> {
+        try {
+            const validOwnership: boolean | HttpException =
+                await this._privateEventsGuestHelpers.checkEventValidOwnershipOfEvent(
+                    deletePrivateEventGuestDto.eventId,
+                    userFromJwt,
+                );
+            if (validOwnership instanceof HttpException) throw validOwnership;
+            await this._prismaService.privateEventGuest.deleteMany({
+                where: {
+                    eventId: deletePrivateEventGuestDto.eventId,
+                    userId: deletePrivateEventGuestDto.userId,
+                },
+            });
+        } catch (err: any) {
+            ExeptionHelpers.handleExeption(err);
+            const errorStatus: any = err?.status
+                ? err.status
+                : HttpStatus.INTERNAL_SERVER_ERROR;
+            throw new HttpException(
+                {
+                    status: errorStatus,
+                    error: err.message,
+                },
+                errorStatus,
+                {
+                    cause: err,
+                },
+            );
+        }
+    }
 }

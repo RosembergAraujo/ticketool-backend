@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { EventEntity } from '@prisma/client';
+import { HttpException, Injectable } from '@nestjs/common';
 import { UserPayload } from 'src/auth/models/UserPayload';
 import { ForbiddenException } from 'src/exeptions/forbidden.exception';
 import { NotFoundException } from 'src/exeptions/not-found.exception';
+import { EventEntity } from 'src/modules/event-entity/entities/event-entity.entity';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import {
     HIGH_PRIVILEGES_APP_ROLES,
@@ -16,18 +16,20 @@ export class PrivateEventsGuestHelpers {
         eventId: string,
         // eventUserId: string,
         userFromJwt: UserPayload,
-    ): Promise<void> {
+    ): Promise<boolean | HttpException> {
         const eventEntity: EventEntity | null =
             await this._prismaService.eventEntity.findUnique({
                 where: {
                     id: eventId,
                 },
             });
-        if (!eventEntity) throw new NotFoundException('This event dont exists');
+        if (!eventEntity)
+            return new NotFoundException('This event dont exists');
         if (
             eventEntity.userId !== userFromJwt.id &&
             !HIGH_PRIVILEGES_APP_ROLES.includes(userFromJwt.role as Role)
         )
-            throw new ForbiddenException();
+            return new ForbiddenException();
+        return true;
     }
 }
