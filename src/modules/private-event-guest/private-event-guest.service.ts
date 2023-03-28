@@ -38,12 +38,10 @@ export class PrivateEventGuestService {
                 createPrivateEventGuestDtoSchema.parse(
                     createPrivateEventGuestDto,
                 );
-            const validOwnership: boolean | HttpException =
-                await this._privateEventsGuestHelpers.checkEventValidOwnershipOfEvent(
-                    data.eventId,
-                    userFromJwt,
-                );
-            if (validOwnership instanceof HttpException) throw validOwnership;
+            await this._privateEventsGuestHelpers.checkEventValidOwnershipOfEvent(
+                data.eventId,
+                userFromJwt,
+            );
             const createdPrivateEventGuest: PrivateEventGuest =
                 await this._prismaService.privateEventGuest.create({ data });
             return {
@@ -80,14 +78,12 @@ export class PrivateEventGuestService {
                 });
             if (!privateEventGuestFromDatabase)
                 throw new NotFoundException(
-                    'A list for this event was not found',
+                    'A list for this event was not found or is empty',
                 );
-            const validOwnership: boolean | HttpException =
-                await this._privateEventsGuestHelpers.checkEventValidOwnershipOfEvent(
-                    eventId,
-                    userFromJwt,
-                );
-            if (validOwnership instanceof HttpException) throw validOwnership;
+            await this._privateEventsGuestHelpers.checkEventValidOwnershipOfEvent(
+                eventId,
+                userFromJwt,
+            );
             const response: PrivateEventGuestFromDatabase[] =
                 await this._prismaService.privateEventGuest.findMany({
                     where: {
@@ -123,12 +119,10 @@ export class PrivateEventGuestService {
         userFromJwt: UserPayload,
     ): Promise<void> {
         try {
-            const validOwnership: boolean | HttpException =
-                await this._privateEventsGuestHelpers.checkEventValidOwnershipOfEvent(
-                    deletePrivateEventGuestDto.eventId,
-                    userFromJwt,
-                );
-            if (validOwnership instanceof HttpException) throw validOwnership;
+            await this._privateEventsGuestHelpers.checkEventValidOwnershipOfEvent(
+                deletePrivateEventGuestDto.eventId,
+                userFromJwt,
+            );
             await this._prismaService.privateEventGuest.deleteMany({
                 where: {
                     eventId: deletePrivateEventGuestDto.eventId,

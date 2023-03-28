@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UserPayload } from 'src/auth/models/UserPayload';
 import { ForbiddenException } from 'src/exeptions/forbidden.exception';
 import { NotFoundException } from 'src/exeptions/not-found.exception';
@@ -12,24 +12,42 @@ import {
 @Injectable()
 export class PrivateEventsGuestHelpers {
     constructor(private readonly _prismaService: PrismaService) {}
+    // async checkEventValidOwnershipOfEvent(
+    //     eventId: string,
+    //     // eventUserId: string,
+    //     userFromJwt: UserPayload,
+    // ): Promise<void | HttpException> {
+    //     const eventEntity: EventEntity | null =
+    //         await this._prismaService.eventEntity.findUnique({
+    //             where: {
+    //                 id: eventId,
+    //             },
+    //         });
+    //     if (!eventEntity)
+    //         return new NotFoundException('This event dont exists');
+    //     if (
+    //         eventEntity.userId !== userFromJwt.id &&
+    //         !HIGH_PRIVILEGES_APP_ROLES.includes(userFromJwt.role as Role)
+    //     )
+    //         return new ForbiddenException();
+    // }
+
     async checkEventValidOwnershipOfEvent(
         eventId: string,
         // eventUserId: string,
         userFromJwt: UserPayload,
-    ): Promise<boolean | HttpException> {
+    ): Promise<void> {
         const eventEntity: EventEntity | null =
             await this._prismaService.eventEntity.findUnique({
                 where: {
                     id: eventId,
                 },
             });
-        if (!eventEntity)
-            return new NotFoundException('This event dont exists');
+        if (!eventEntity) throw new NotFoundException('This event dont exists');
         if (
             eventEntity.userId !== userFromJwt.id &&
             !HIGH_PRIVILEGES_APP_ROLES.includes(userFromJwt.role as Role)
         )
-            return new ForbiddenException();
-        return true;
+            throw new ForbiddenException();
     }
 }

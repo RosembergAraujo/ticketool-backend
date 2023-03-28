@@ -137,12 +137,10 @@ export class EventEntityService {
 
     async remove(id: string, userFromJwt: UserPayload): Promise<void> {
         try {
-            const validOwnership: boolean | HttpException =
-                await this._privateEventsGuestHelpers.checkEventValidOwnershipOfEvent(
-                    id,
-                    userFromJwt,
-                );
-            if (validOwnership instanceof HttpException) throw validOwnership;
+            await this._privateEventsGuestHelpers.checkEventValidOwnershipOfEvent(
+                id,
+                userFromJwt,
+            );
             await this._prismaService.eventEntity.delete({ where: { id } });
         } catch (err: any) {
             ExeptionHelpers.handleExeption(err);

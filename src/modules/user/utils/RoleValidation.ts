@@ -1,3 +1,4 @@
+import { HttpException } from '@nestjs/common';
 import { UserPayload } from 'src/auth/models/UserPayload';
 import { ForbiddenException } from 'src/exeptions/forbidden.exception';
 import {
@@ -6,10 +7,10 @@ import {
     Role,
 } from '../entities/role.entity';
 
-export function checkRolePermission(
+export async function checkRolePermission(
     id: string,
     userFromJwt: UserPayload,
-): void {
+): Promise<void | HttpException> {
     if (
         !HIGH_PRIVILEGES_APP_ROLES.includes(userFromJwt.role as Role) &&
         userFromJwt.id !== id
@@ -17,10 +18,10 @@ export function checkRolePermission(
         throw new ForbiddenException();
 }
 
-export function checkCanCreateWithoutAuth(
+export async function checkCanCreateWithoutAuth(
     role: Role,
     userFromJwt: UserPayload,
-): void {
+): Promise<void | HttpException> {
     if (
         !ROLES_THAT_CAN_BE_CREATED_WITHOUT_AUTHORIZATION.includes(role) &&
         !HIGH_PRIVILEGES_APP_ROLES.includes(userFromJwt.role as Role)

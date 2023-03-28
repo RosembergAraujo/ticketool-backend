@@ -28,7 +28,7 @@ export class UserService {
                 role: createUserDto.role || Role.USER,
             });
             data.password = await createPasswordHashed(data.password);
-            checkCanCreateWithoutAuth(data.role as Role, userPayload);
+            await checkCanCreateWithoutAuth(data.role as Role, userPayload);
             const createdUser: User = await this._prismaService.user.create({
                 data,
             });
@@ -66,7 +66,7 @@ export class UserService {
     //     where: { email },
     //   });
     //   if (userFromJwt)
-    //     this.checkRolePermission(userFromDatabase?.id, userFromJwt);
+    //     this.await checkRolePermission(userFromDatabase?.id, userFromJwt);
     //   return userFromDatabase;
     // }
 
@@ -74,17 +74,34 @@ export class UserService {
         id: string,
         userFromJwt: UserPayload,
     ): Promise<responseUser | null> {
-        checkRolePermission(id, userFromJwt);
-        const userFound: User | null =
-            await this._prismaService.user.findUnique({
-                where: { id },
-            });
-        if (userFound)
-            return {
-                ...userFound,
-                password: undefined,
-            };
-        throw new NotFoundException();
+        try {
+            await checkRolePermission(id, userFromJwt);
+            const userFound: User | null =
+                await this._prismaService.user.findUnique({
+                    where: { id },
+                });
+            if (userFound)
+                return {
+                    ...userFound,
+                    password: undefined,
+                };
+            throw new NotFoundException();
+        } catch (err: any) {
+            ExeptionHelpers.handleExeption(err);
+            const errorStatus: any = err?.status
+                ? err.status
+                : HttpStatus.INTERNAL_SERVER_ERROR;
+            throw new HttpException(
+                {
+                    status: errorStatus,
+                    error: err.message,
+                },
+                errorStatus,
+                {
+                    cause: err,
+                },
+            );
+        }
     }
 
     async update(
@@ -93,7 +110,7 @@ export class UserService {
         userFromJwt: UserPayload,
     ): Promise<responseUser> {
         try {
-            checkRolePermission(id, userFromJwt);
+            await checkRolePermission(id, userFromJwt);
             const userFromDatabase: User | null =
                 await this._prismaService.user.findUnique({
                     where: { id },
@@ -149,8 +166,8 @@ export class UserService {
     }
 
     async remove(id: string, userFromJwt: UserPayload): Promise<void> {
-        checkRolePermission(id, userFromJwt);
         try {
+            await checkRolePermission(id, userFromJwt);
             await this._prismaService.user.delete({
                 where: { id },
             });
